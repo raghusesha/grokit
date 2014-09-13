@@ -1,0 +1,8 @@
+# Ignore everything in this directory
+*
+# Except this file
+!.gitignore
+
+# You will have to download the tools in directory:
+# opengrok, tomcat, ctags and jre
+# check the platdefines.py for more information
