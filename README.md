@@ -8,6 +8,7 @@ Dependencies
 ### Python libraries
 - [`bs4`](http://www.crummy.com/software/BeautifulSoup/bs4/download/4.3/)
 - [`lxml`](https://pypi.python.org/pypi/lxml)
+
 ### Tools
 - [`Oengrok`](http://opengrok.github.io/OpenGrok/) (ofcourse!)
 - [`JRE`](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
@@ -39,4 +40,4 @@ Platforms Tested On:
 
 Author
 ------------
-Raghu Sesha Iyengar (<raghu.sesha@gmail.com, raghu.iyengar@agreeyamobility.net>)
+Raghu Sesha Iyengar(raghu.sesha@gmail.com, raghu.iyengar@agreeyamobility.net)
