@@ -10,7 +10,7 @@ Dependencies
 - [`lxml`](https://pypi.python.org/pypi/lxml)
 
 ### Tools
-- [`Oengrok`](http://opengrok.github.io/OpenGrok/) (ofcourse!)
+- [`Opengrok`](http://opengrok.github.io/OpenGrok/) (ofcourse!)
 - [`JRE`](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - [`exuberant-ctags`](http://ctags.sourceforge.net/)
 - [`Apache Tomcat`](http://tomcat.apache.org/)
@@ -35,8 +35,10 @@ Platforms Tested On:
 ### Linux
 - Ubuntu 12.04 64 bit
 - Ubuntu 11.04 64 bit
+
 ### Windows
 - Windows 7 32 bit
+- Windows 8 64 bit
 
 Author
 ------------
