@@ -7,7 +7,7 @@ import sys
 import os
 import optparse
 from textwrap import dedent
-from utils import start_stop_server, validate_path, setup_index_for_project, check_and_copy_tools, ospath
+from utils import start_stop_server, validate_path, check_and_copy_tools, ospath, index_for_project
 
 class MyParser(optparse.OptionParser):
     def format_epilog(self, formatter):
@@ -43,11 +43,17 @@ def setup(envs, opts):
         start_stop_server(envs, opts.action)
     elif opts.action == 'setup':
         envs['ppath'] = ospath(os.path.expanduser(opts.ppath).rstrip("/").rstrip("\\"))
-        if validate_path(envs) == False:
-            print "Not a valid source path"
-            return False
-        if check_and_copy_tools(envs) == True:
-            setup_index_for_project(envs)
+        if (index_for_project(envs, "setup") == True):
+            print "Setup completed successfully"
+        else:
+            print "Setup failed to complete!"
+    elif opts.action == 'reindex':
+        envs['ppath'] = ospath(os.path.expanduser(opts.ppath).rstrip("/").rstrip("\\"))
+        if (index_for_project(envs, "reindex") == True):
+            print "Reindex completed successfully"
+        else:
+            print "Reindex failed to complete!"
+    
 
 def main(sysargv):
     envs = {'tpath': '', 'ppath': '', 'cpath':''}
@@ -59,8 +65,8 @@ def main(sysargv):
     parser.add_option('--action', help=dedent(action_help), dest='action', action='store')
 
     (opts, args) = parser.parse_args()
-    if opts.action not in ['start', 'stop', 'setup']:
-        print "Should provide one of (setup|start|stop) for action"
+    if opts.action not in ['start', 'stop', 'setup', 'reindex']:
+        print "Should provide one of (setup|start|stop|reindex) for action"
         return
     if opts.action in ['setup'] and opts.ppath == None:
         print "--ppath is mandatory when --action=setup"

@@ -166,7 +166,26 @@ def start_stop_server(envs, action):
             tomcat_server('stop', jredir, tomdir)
             print "Server Stopped"
 
-def setup_index_for_project(envs):
+def index_for_project(envs, command):
+    if (command == "setup"):
+        print "Setting up index..."
+        if validate_path(envs) == False:
+            print "Not a valid source path"
+            return False
+        if check_and_copy_tools(envs) == True:
+            return index_a_project(envs)
+    elif (command == "reindex"):
+        print "Reindexing...."
+        if validate_path(envs) == True:
+            print "Empty folder found - run setup before reindex"
+            return False
+        if check_and_copy_tools(envs) == True:
+            return index_a_project(envs)
+    else:
+        print "Invalid command!"
+        return False
+
+def index_a_project(envs):
     print myself()
     ppath = ospath(envs['ppath'])
     ogdir = ospath(get_tool_dir('opengrok', envs))
@@ -184,14 +203,33 @@ def setup_index_for_project(envs):
         print "Copying source.war failed"
         return False
 
-    print "Creating index"
     start_stop_server(envs, 'stop')
     start_stop_server(envs, 'start')
-    if create_og_index(envs) == True:
+    if index_og(envs) == True:
         start_stop_server(envs, 'stop')
         start_stop_server(envs, 'start')
+        return True
     else:
-        print "Creating Opengrok index failed"
+        return False
+
+def index_og(envs):
+    print myself()
+    etc = convert_to_os_path(get_temp_dir(envs)+"/etc")
+    if not os.path.isdir(etc):
+        os.mkdir(etc)
+    java = convert_to_os_path(get_tool_dir('jre', envs)+"/bin/"+get_tool_property('jre','bin_file'))
+    opengrok =   convert_to_os_path(get_tool_dir('opengrok', envs)+"/lib/"+get_tool_property('opengrok','bin_file'))
+    config = convert_to_os_path(etc+"/configuration.xml")
+    ctags = convert_to_os_path(get_tool_dir('ctags', envs)+"/"+get_tool_property('ctags','bin_file'))
+    src = convert_to_os_path(envs['ppath'])
+    data = convert_to_os_path(get_temp_dir(envs)+"/data")
+    webapp = os.path.basename(envs['ppath'])
+    cmd = java+" -jar "+opengrok+" -W "+config+" -c "+ctags+" -P -S -s "+src+" -d "+data+" -w "+webapp
+    try:
+        os.system(cmd)
+        return True
+    except:
+        return False
 
 def validate_path(envs):
     print myself()
@@ -208,7 +246,6 @@ def validate_path(envs):
     return False
 
 def check_and_copy_tools(envs):
-    print "Setting up tools..."
     print myself()
     if tools_present(envs) == True:
         if extract_and_copy(envs) == True:
@@ -283,25 +320,6 @@ def untar_tool(tool, envs):
     if tarfile.is_tarfile(tool_name):
         fhand = tarfile.open(tool_name)
         fhand.extractall(extract_dir)
-
-def create_og_index(envs):
-    print myself()
-    etc = convert_to_os_path(get_temp_dir(envs)+"/etc")
-    if not os.path.isdir(etc):
-        os.mkdir(etc)
-    java = convert_to_os_path(get_tool_dir('jre', envs)+"/bin/"+get_tool_property('jre','bin_file'))
-    opengrok =   convert_to_os_path(get_tool_dir('opengrok', envs)+"/lib/"+get_tool_property('opengrok','bin_file'))
-    config = convert_to_os_path(etc+"/configuration.xml")
-    ctags = convert_to_os_path(get_tool_dir('ctags', envs)+"/"+get_tool_property('ctags','bin_file'))
-    src = convert_to_os_path(envs['ppath'])
-    data = convert_to_os_path(get_temp_dir(envs)+"/data")
-    webapp = os.path.basename(envs['ppath'])
-    cmd = java+" -jar "+opengrok+" -W "+config+" -c "+ctags+" -P -S -s "+src+" -d "+data+" -w "+webapp
-    try:
-        os.system(cmd)
-        return True
-    except:
-        return False
 
 def tomcat_server(action, jredir, tomdir):
     if action not in ['start', 'stop']:
