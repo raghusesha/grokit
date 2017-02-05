@@ -212,25 +212,6 @@ def index_a_project(envs):
     else:
         return False
 
-def index_og(envs):
-    print myself()
-    etc = convert_to_os_path(get_temp_dir(envs)+"/etc")
-    if not os.path.isdir(etc):
-        os.mkdir(etc)
-    java = convert_to_os_path(get_tool_dir('jre', envs)+"/bin/"+get_tool_property('jre','bin_file'))
-    opengrok =   convert_to_os_path(get_tool_dir('opengrok', envs)+"/lib/"+get_tool_property('opengrok','bin_file'))
-    config = convert_to_os_path(etc+"/configuration.xml")
-    ctags = convert_to_os_path(get_tool_dir('ctags', envs)+"/"+get_tool_property('ctags','bin_file'))
-    src = convert_to_os_path(envs['ppath'])
-    data = convert_to_os_path(get_temp_dir(envs)+"/data")
-    webapp = os.path.basename(envs['ppath'])
-    cmd = java+" -jar "+opengrok+" -W "+config+" -c "+ctags+" -P -S -s "+src+" -d "+data+" -w "+webapp
-    try:
-        os.system(cmd)
-        return True
-    except:
-        return False
-
 def validate_path(envs):
     print myself()
     ppath = envs['ppath']
@@ -320,6 +301,25 @@ def untar_tool(tool, envs):
     if tarfile.is_tarfile(tool_name):
         fhand = tarfile.open(tool_name)
         fhand.extractall(extract_dir)
+
+def index_og(envs):
+    print myself()
+    etc = convert_to_os_path(get_temp_dir(envs)+"/etc")
+    if not os.path.isdir(etc):
+        os.mkdir(etc)
+    java = convert_to_os_path(get_tool_dir('jre', envs)+"/bin/"+get_tool_property('jre','bin_file'))
+    opengrok =   convert_to_os_path(get_tool_dir('opengrok', envs)+"/lib/"+get_tool_property('opengrok','bin_file'))
+    config = convert_to_os_path(etc+"/configuration.xml")
+    ctags = convert_to_os_path(get_tool_dir('ctags', envs)+"/"+get_tool_property('ctags','bin_file'))
+    src = convert_to_os_path(envs['ppath'])
+    data = convert_to_os_path(get_temp_dir(envs)+"/data")
+    webapp = os.path.basename(envs['ppath'])
+    cmd = java+" -jar "+opengrok+" -W "+config+" -c "+ctags+" -P -S -s "+src+" -d "+data+" -w "+webapp
+    try:
+        os.system(cmd)
+        return True
+    except:
+        return False
 
 def tomcat_server(action, jredir, tomdir):
     if action not in ['start', 'stop']:
