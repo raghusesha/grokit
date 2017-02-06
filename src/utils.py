@@ -166,7 +166,26 @@ def start_stop_server(envs, action):
             tomcat_server('stop', jredir, tomdir)
             print "Server Stopped"
 
-def setup_index_for_project(envs):
+def index_for_project(envs, command):
+    if (command == "setup"):
+        print "Setting up index..."
+        if validate_path(envs) == False:
+            print "Not a valid source path"
+            return False
+        if check_and_copy_tools(envs) == True:
+            return index_a_project(envs)
+    elif (command == "reindex"):
+        print "Reindexing...."
+        if validate_path(envs) == True:
+            print "Empty folder found - run setup before reindex"
+            return False
+        if check_and_copy_tools(envs) == True:
+            return index_a_project(envs)
+    else:
+        print "Invalid command!"
+        return False
+
+def index_a_project(envs):
     print myself()
     ppath = ospath(envs['ppath'])
     ogdir = ospath(get_tool_dir('opengrok', envs))
@@ -184,14 +203,14 @@ def setup_index_for_project(envs):
         print "Copying source.war failed"
         return False
 
-    print "Creating index"
     start_stop_server(envs, 'stop')
     start_stop_server(envs, 'start')
-    if create_og_index(envs) == True:
+    if index_og(envs) == True:
         start_stop_server(envs, 'stop')
         start_stop_server(envs, 'start')
+        return True
     else:
-        print "Creating Opengrok index failed"
+        return False
 
 def validate_path(envs):
     print myself()
@@ -208,7 +227,6 @@ def validate_path(envs):
     return False
 
 def check_and_copy_tools(envs):
-    print "Setting up tools..."
     print myself()
     if tools_present(envs) == True:
         if extract_and_copy(envs) == True:
@@ -284,7 +302,7 @@ def untar_tool(tool, envs):
         fhand = tarfile.open(tool_name)
         fhand.extractall(extract_dir)
 
-def create_og_index(envs):
+def index_og(envs):
     print myself()
     etc = convert_to_os_path(get_temp_dir(envs)+"/etc")
     if not os.path.isdir(etc):
